@@ -1,0 +1,81 @@
+h4 {
+  font-family: Impact, Charcoal, sans-serif;
+  font-weight: bold;
+  text-align: center;
+}
+
+p {
+  margin: 10px 0 10px;
+  padding: 0 20px;
+}
+
+.av8_body {
+  font-size: 14px;
+  background-image: url("/GSHMI/assets/images/G-SHMI_landing_bw.jpg");
+  no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+/* Page Header */
+.page-header-av8 {
+  margin: 10px 0 10px;
+  border-bottom: 1px solid #eee;
+  text-align: right;
+  align-content: right;
+}
+
+/* Blue Table with Sections */
+table.blueTable {
+  border: 1px solid #1C6EA4;
+  background-color: #CAC6EE;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+table.blueTable td, table.blueTable th {
+  border: 1px solid #AAAAAA;
+  padding: 10px 10px;
+}
+
+table.blueTable tbody td {
+  font-size: 12px;
+  font-weight: bold;
+  color: #1C08C7;
+
+}
+
+table.blueTable td:nth-child(even) {
+  background: #F5F5FF;
+  font-weight: normal;
+}
+
+/* Blue Table with Rows */
+table.blueTableRows {
+  border: 1px solid #1C6EA4;
+  background-color: #CAC6EE;
+  text-align: left;
+  border-collapse: collapse;
+  word-wrap:break-word;
+  table-layout:fixed
+}
+
+table.blueTableRows td, table.blueTableRows th {
+  border: 1px solid #AAAAAA;
+  padding: 10px 5px;
+  color: #1C08C7;
+}
+
+table.blueTableRows tbody td {
+  font-size: 11px;
+  color: black;
+  background: #F1F5F5;
+}
+
+table.blueTableRows td:nth-child(even) {
+  font-size: 11px;
+  background: #F5F1FF;
+
+}
