@@ -532,6 +532,16 @@ require_once "config.php";
       </div>
     </div>
     <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="heading-av8-2">
+        <h5 class="panel-title">
+          <a role="button" data-toggle="collapse" class="accordion-plus-toggle collapsed" data-parent="#accordion7401210" href="#collapse-av8-2" aria-expanded="false" aria-controls="collapse-av8-2">EV-97 Pilot Operating Handbook</a>
+        </h5>
+      </div>
+      <div id="collapse-av8-2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-av8-2">
+        <h4><a href="./assets/documents/EV97_POH.pdf" download="EV97_POH.pdf">Download a copy (PDF) of the EV-97 POH to your local tablet/PC</a></h4>
+      </div>
+    </div>
+    <div class="panel panel-default">
       <div class="panel-heading" role="tab" id="heading411391">
         <h5 class="panel-title">
           <a role="button" data-toggle="collapse" class="accordion-plus-toggle collapsed" data-parent="#accordion7401210" href="#collapse411391" aria-expanded="false" aria-controls="collapse411391">Aircraft Insurance Document</a>
@@ -544,11 +554,186 @@ require_once "config.php";
     <div class="panel panel-default">
       <div class="panel-heading" role="tab" id="heading2183316">
         <h5 class="panel-title">
-          <a role="button" data-toggle="collapse" class="accordion-plus-toggle collapsed" data-parent="#accordion7401210" href="#collapse2183316" aria-expanded="false" aria-controls="collapse2183316">Other Related Aircraft Documents</a>
+          <a role="button" data-toggle="collapse" class="accordion-plus-toggle collapsed" data-parent="#accordion7401210" href="#collapse2183316" aria-expanded="false" aria-controls="collapse2183316">BMAA Permit Data</a>
         </h5>
       </div>
       <div id="collapse2183316" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2183316">
-        <div class="panel-body">Will be included soon!</div>
+        <div>
+        	<table  class='table table-bordered'>
+        		<caption>Aircraft Reg: SHMI</caption>
+        		<thead>
+        			<tr style='background-color: #f8f9d2; background-image: linear-gradient(315deg, #f8f9d2 0%, #e8dbfc 74%);'>
+        				<th>COV Issue Date</th>
+        				<th>Inspector         </th>
+        				<th>Query Code</th>
+        				<th>Reason for Query</th>
+        				<th>Total Airframe Hours</th>
+        				<th>COV Application Received</th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			<tr >
+        				<td>
+        				</td>
+        				<td>
+        				</td>
+        				<td>EO - Owner to resolve</td>
+        				<td>
+        					<p>Aw001 and Aw007 required</p>
+        				</td>
+        				<td>0</td>
+        				<td>
+        				</td>
+        			</tr>
+        			<tr>
+        				<td>07/12/2016</td>
+        				<td>Mr T Willcox</td>
+        				<td>
+        				</td>
+        				<td>
+        				</td>
+        				<td>2,130.55</td>
+        				<td>05/12/2016</td>
+        			</tr>
+        			<tr>
+        				<td>03/10/2017</td>
+        				<td>Mr T Willcox</td>
+        				<td>EO - Owner to resolve</td>
+        				<td>
+        					<p>Query on BMAA Membership. Emailed owner</p>
+        				</td>
+        				<td>2,348</td>
+        				<td>27/09/2017</td>
+        			</tr>
+        			<tr>
+        				<td>05/10/2018</td>
+        				<td>Mr T Willcox</td>
+        				<td>AP - Awaiting Payment</td>
+        				<td>
+        					<p>Awaiting payment - received</p>
+        				</td>
+        				<td>2,880</td>
+        				<td>05/10/2018</td>
+        			</tr>
+        			<tr>
+        				<td>15/10/2019</td>
+        				<td>Mr T Willcox</td>
+        				<td>
+        				</td>
+        				<td>
+        				</td>
+        				<td>2,932</td>
+        				<td>14/10/2019</td>
+        			</tr>
+        			<tr>
+        				<td>
+        				</td>
+        				<td>S Meester</td>
+        				<td>EO - Owner to resolve, EI - Inspector to resolve, AP - Awaiting Payment</td>
+        				<td>
+        					<p>Query with ownership grid - email sent 05/10/2020<br>
+        						Awaiting for payment - email sent 05/10/2020 - paid<br>
+        						Main owner BMAA membership expired - email sent 05/10/2020<br>
+        						Query on inspection - email sent 05/10/2020 - Resolved
+        					</p>
+        				</td>
+        				<td>3,142</td>
+        				<td>02/10/2020</td>
+        			</tr>
+        		</tbody>
+        	</table>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="heading-av8-1">
+        <h5 class="panel-title">
+          <a role="button" data-toggle="collapse" class="accordion-plus-toggle collapsed" data-parent="#accordion7401210" href="#collapse-av8-1" aria-expanded="false" aria-controls="collapse-av8-1">BMAA Aircrat Data</a>
+        </h5>
+      </div>
+      <div id="collapse-av8-1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-av8-1">
+        <div>
+        	<table class='table table-bordered'>
+        		<caption>Aircraft Reg: SHMI</caption>
+        		<thead>
+        			<tr style='background-color: #f8f9d2; background-image: linear-gradient(315deg, #f8f9d2 0%, #e8dbfc 74%);'>
+        				<th>Date</th>
+        				<th>Issue Number</th>
+        				<th>Mod Type</th>
+        				<th>Description</th>
+        				<th>Final Approved by</th>
+        				<th>Mod Approval Reference</th>
+        				<th>Comments</th>
+        			</tr>
+        		</thead>
+        		<tbody>
+        			<tr>
+        				<td>
+        				</td>
+        				<td>
+        					<p>1</p>
+        				</td>
+        				<td>MAAN</td>
+        				<td>
+        					<p>Repairs</p>
+        				</td>
+        				<td>Roger Pattrick</td>
+        				<td>
+        					<p>2635</p>
+        				</td>
+        				<td>
+        				</td>
+        			</tr>
+        			<tr>
+        				<td>19/09/2014</td>
+        				<td>
+        				</td>
+        				<td>Standard Minor</td>
+        				<td>
+        					<p>104 - Fitting a Transponder</p>
+        				</td>
+        				<td>Adrian Jones</td>
+        				<td>
+        					<p>/02543</p>
+        				</td>
+        				<td>
+        				</td>
+        			</tr>
+        			<tr>
+        				<td>
+        				</td>
+        				<td>
+        				</td>
+        				<td>Standard Minor</td>
+        				<td>
+        					<p>107 - Auxiliary Power Socket</p>
+        				</td>
+        				<td>
+        				</td>
+        				<td>
+        				</td>
+        				<td>
+        				</td>
+        			</tr>
+        			<tr>
+        				<td>
+        				</td>
+        				<td>
+        				</td>
+        				<td>Standard Minor</td>
+        				<td>
+        					<p>121 - PilotAware Installation</p>
+        				</td>
+        				<td>
+        				</td>
+        				<td>
+        				</td>
+        				<td>
+        				</td>
+        			</tr>
+        		</tbody>
+        	</table>
+        </div>
       </div>
     </div>
   </div>
