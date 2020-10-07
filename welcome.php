@@ -13,7 +13,7 @@ require_once "config.php";
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GSHMI Main Page</title>
+    <title><?php echo CALLSIGN?> Main Page</title>
     <link rel="stylesheet" href="av8_style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
 
@@ -28,16 +28,15 @@ require_once "config.php";
       <table align="center" class='blueTable'>
         <tr>
           <td>
-          <h3 class="header-av8">G-SHMI Current Details</h3>
           <?php
             //run SQL and prepare output HTML table
-            $sql_aircraft = 'select Type, concat(floor(total_hrs_flown/60), " : ",total_hrs_flown-(floor(total_hrs_flown/60)*60)) Total_Hrs, concat(floor(hrs_to_next_check/60), " : ",hrs_to_next_check-(floor(hrs_to_next_check/60)*60)) Hrs_to_Next_Check, DATE_FORMAT(last_flown_date, "%d/%m/%Y") Last_Flown_Date, Last_Arrival_Fuel,  Last_Defects, DATE_FORMAT(insurance_due, "%d/%m/%Y") Insurance_Due_Date,DATE_FORMAT(permit_due, "%d/%m/%Y") Permit_Due_Date from aircraft where callsign = "GSHMI";';
+            $sql_aircraft = 'select Type, concat(floor(total_hrs_flown/60), " : ",total_hrs_flown-(floor(total_hrs_flown/60)*60)) Total_Hrs, concat(floor(hrs_to_next_check/60), " : ",hrs_to_next_check-(floor(hrs_to_next_check/60)*60)) Hrs_to_Next_Check, DATE_FORMAT(last_flown_date, "%d/%m/%Y") Last_Flown_Date, Last_Arrival_Fuel,  Last_Defects, DATE_FORMAT(insurance_due, "%d/%m/%Y") Insurance_Due_Date,DATE_FORMAT(permit_due, "%d/%m/%Y") Permit_Due_Date from aircraft where callsign = "'.CALLSIGN.'";';
             if ($result = mysqli_query($link, $sql_aircraft)) {
               if (mysqli_num_rows($result) > 0) {
                 if (mysqli_num_rows($result) > 0) {
-                  echo "<table class='blueTable'>";
+                  echo "<table class='table>";
                   while ($row = mysqli_fetch_array($result)) {
-                      echo "<tr><td>Registration:</td><td>G-SHMI</td></tr>";
+                      echo "<tr class='av8tr'><td colspan=2>".CALLSIGN." Current Details</td></tr>";
                       echo "<tr><td>Type:</td><td>" . $row['Type'] . "</td></tr>";
                       echo "<tr><td>Total Hours: </td><td>" . $row['Total_Hrs'] . "</td></tr>";
                       echo "<tr><td>Hours to Next Check:</td><td>" . $row['Hrs_to_Next_Check'] . "</td></tr>";

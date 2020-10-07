@@ -36,7 +36,7 @@ require_once "config.php";
            while($row = mysqli_fetch_array($result))
            {
                 $output .= '
-                     <tr style="background-color: #f8f9d2; background-image: linear-gradient(315deg, #f8f9d2 0%, #e8dbfc 74%);">
+                     <tr class="av8tr">
                           <td>'.CALLSIGN.'</td>
                           <td>'. $row["Log_Date"] .'</td>
                           <td> '. $row["Total_Hrs_Today"] .'</td>
@@ -44,18 +44,18 @@ require_once "config.php";
                           <td>'. $row["Hours_To_Next_Check"] .'</td>
                      </tr>
                      <tr style="background-color: #aecad6; background-image: linear-gradient(315deg, #aecad6 0%, #b8d3fe 74%);"><td colspan=5><table class="table table-bordered"><tr>
-                       <th>Flt No</th>
-                       <th>Captain</th>
-                       <th>Passenger</th>
-                       <th>From Airport</th>
-                       <th>To Airport</th>
-                       <th>Engine Start-Up</th>
-                       <th>Engine Shut-Down</th>
-                       <th><strong>Engine Runtime</strong></th>
-                       <th>Takeoff Time</th>
-                       <th>Landing Time</th>
-                       <th>Airborne Time</th>
-                       <th><strong>Landings</strong></th>
+                       <td>Flt No</td>
+                       <td>Captain</td>
+                       <td>Passenger</td>
+                       <td>From Airport</td>
+                       <td>To Airport</td>
+                       <td>Engine Start-Up</td>
+                       <td>Engine Shut-Down</td>
+                       <td><strong>Engine Runtime</strong></td>
+                       <td>Takeoff Time</td>
+                       <td>Landing Time</td>
+                       <td>Airborne Time</td>
+                       <td><strong>Landings</strong></td>
                       </tr>';
                      $sql_dlog_flights = '
                        SELECT df.flt_no Flt_No,
@@ -90,13 +90,49 @@ require_once "config.php";
                          <td><strong>'. $row_flights["Landings"] . '</strong></td>
                        </tr>';
                      }
+                     $output .= "</table>";
+                     //Fuel/Oil Record
+                     $sql_dlog_fuel_oil = "
+                     SELECT Flt_No, Uplift_Fuel, Uplift_Oil, Departure_Fuel, Departure_Oil_OK, Arrival_Fuel, Arrival_Oil_OK, Defects FROM dlog_fuel_oil
+                     WHERE dlog_id = ".$row['ID']."
+                     order by flt_no";
+                     $result_dlog_fuel_oil = mysqli_query($link, $sql_dlog_fuel_oil);
+                     if (mysqli_num_rows($result_dlog_fuel_oil) > 0) {
+                       $output .= "<p><strong>FUEL/OIL RECORD - Litres</strong></p>";
+                       $output .= "<table class='table table-bordered' style='width: 60%'>";
+                       $output .= "<tr>";
+                       $output .= "<td style='width: 10%'>Flight No</td>";
+                       $output .= "<td style='width: 10%'>Uplift Fuel</td>";
+                       $output .= "<td style='width: 10%'>Uplift Oil</td>";
+                       $output .= "<td style='width: 10%'>Departure Fuel</td>";
+                       $output .= "<td style='width: 10%; text-align:center;'>Departure Oil OK?</td>";
+                       $output .= "<td style='width: 10%'>Arrival Fuel</td>";
+                       $output .= "<td style='width: 10%; text-align:center;'>Arrival Oil OK?</td>";
+                       $output .= "<td style='width: 30%'>Defects</td>";
+                       $output .= "</tr>";
+                     while ($row_fuel_oil = mysqli_fetch_array($result_dlog_fuel_oil)) {
+                       $output .= "<tr>";
+                       $output .= "<td>". $row_fuel_oil['Flt_No'] . "</td>";
+                       $output .= "<td>". $row_fuel_oil['Uplift_Fuel'] . " L</td>";
+                       $output .= "<td>". $row_fuel_oil['Uplift_Oil'] . " L</td>";
+                       $output .= "<td>". $row_fuel_oil['Departure_Fuel'] . " L</td>";
+                       if ($row_fuel_oil['Departure_Oil_OK'] == '1') {$output .= "<td style='text-align:center; color: white; font-weight: bold; background-color: green;'>Yes";} else {$output .= "<td style='text-align:center; color: white; font-weight: bold; background-color: red;'>No";}; $output .= "</td>";
+                       $output .= "<td>". $row_fuel_oil['Arrival_Fuel'] . " L</td>";
+                       if ($row_fuel_oil['Arrival_Oil_OK'] == '1') {$output .= "<td style='text-align:center; color: white; font-weight: bold; background-color: green;'>Yes";} else {$output .= "<td style='text-align:center; color: white; font-weight: bold; background-color: red;'>No";}; $output .= "</td>";
+                       if ($row_fuel_oil['Defects'] == 'NIL') {$output .= "<td>". $row_fuel_oil['Defects'];} else {$output .= "<td style='background-color: yellow;'>". $row_fuel_oil['Defects'];}; $output .= "</td>";
+                       $output .= "</tr>";
+                     }
+                     $output .= "</table>";
+                     $output .= "</td></tr>";
+                     } else { $output .= "<p><strong>FUEL/OIL RECORD: No records found for this Flight Log</strong><p>"; }
+
            }
       }
       else
       {
            $output .= '
                 <tr>
-                     <td colspan="5">No Flight Logs Found!</td>
+                     <td colspan="5"><strong>No Flight Logs were found for this period.</strong></td>
                 </tr>
            ';
       }

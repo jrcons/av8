@@ -14,7 +14,7 @@ require_once "config.php";
 
 <head>
   <meta charset="UTF-8">
-  <title>Group Rules and Other Documentation</title>
+  <title><?php echo CALLSIGN?> Documentation</title>
   <link rel="stylesheet" href="av8_style.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
   <style type="text/css">
@@ -74,7 +74,7 @@ require_once "config.php";
       <path fill-rule="evenodd"
         d="M4.5 10.5A.5.5 0 0 1 5 10h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 4h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
     </svg>
-    G-SHMI Group Rules and Other Documentation
+    <?php echo CALLSIGN?> Group Rules and Other Documentation
   </p>
   <br>
   <div class="panel-group" id="accordion7401210" role="tablist" aria-multiselectable="false">

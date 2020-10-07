@@ -14,7 +14,7 @@ require_once "config.php";
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>View Flight Log</title>
+    <title>View <?php echo CALLSIGN?> Flight Log</title>
     <link rel="stylesheet" href="av8_style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
@@ -39,9 +39,6 @@ require_once "config.php";
     <div class="container" style="width:95%">
       <table class='table'>
         <tr>
-          <td>
-            <p>Flight Date Filters</p>
-          </td>
           <td>
             <input type="button" name="prevmonth" id="prevmonth" value="Previous" class="btn btn-info btn-block" />
           </td>
@@ -87,7 +84,7 @@ require_once "config.php";
                   echo "<th>Hours To Next Check</th>";
                 echo "</tr>";
               while ($row = mysqli_fetch_array($result_dlog)) {
-                  echo "<tr style='background-color: #f8f9d2; background-image: linear-gradient(315deg, #f8f9d2 0%, #e8dbfc 74%);'>";
+                  echo "<tr class='av8tr'>";
                     echo "<td>".CALLSIGN."</td>";
                     echo "<td>" . $row['Log_Date'] . "</td>";
                     echo "<td>" . $row['Total_Hrs_Today'] . "</td>";
@@ -95,19 +92,21 @@ require_once "config.php";
                     echo "<td>" . $row['Hours_To_Next_Check'] . "</td>";
                   echo "</tr>";
                   echo "<tr style='background-color: #aecad6; background-image: linear-gradient(315deg, #aecad6 0%, #b8d3fe 74%);'><td colspan=5><table class='table table-bordered'><tr>";
-                    echo "<th>Flt No</th>";
-                    echo "<th>Captain</th>";
-                    echo "<th>Passenger</th>";
-                    echo "<th>From Airport</th>";
-                    echo "<th>To Airport</th>";
-                    echo "<th>Engine Start-Up</th>";
-                    echo "<th>Engine Shut-Down</th>";
-                    echo "<th><strong>Engine Runtime</strong></th>";
-                    echo "<th>Takeoff Time</th>";
-                    echo "<th>Landing Time</th>";
-                    echo "<th>Airborne Time</th>";
-                    echo "<th><strong>Landings</strong></th>";
+                    echo "<td>Flt No</td>";
+                    echo "<td>Captain</td>";
+                    echo "<td>Passenger</td>";
+                    echo "<td>From Airport</td>";
+                    echo "<td>To Airport</td>";
+                    echo "<td>Engine Start-Up</td>";
+                    echo "<td>Engine Shut-Down</td>";
+                    echo "<td><strong>Engine Runtime</strong></td>";
+                    echo "<td>Takeoff Time</td>";
+                    echo "<td>Landing Time</td>";
+                    echo "<td>Airborne Time</td>";
+                    echo "<td><strong>Landings</strong></td>";
                   echo "</tr>";
+
+                  //Flights Record
                   $sql_dlog_flights = "
                     SELECT df.flt_no Flt_No,
                     captain Captain,
@@ -127,29 +126,65 @@ require_once "config.php";
                   $result_dlog_flights = mysqli_query($link, $sql_dlog_flights);
                   while ($row_flights = mysqli_fetch_array($result_dlog_flights)) {
                     echo "<tr>";
-                      echo "<td>". $row_flights['Flt_No'] . "</td>";
-                      echo "<td>". $row_flights['Captain'] . "</td>";
-                      echo "<td>". $row_flights['P2_Passenger'] . "</td>";
-                      echo "<td>". $row_flights['From_Airport'] . "</td>";
-                      echo "<td>". $row_flights['To_Airport'] . "</td>";
-                      echo "<td>". $row_flights['Engine_Start_Up'] . "</td>";
-                      echo "<td>". $row_flights['Engine_Shutdown'] . "</td>";
-                      echo "<td><strong>". $row_flights['Engine_Runtime'] . "</strong></td>";
-                      echo "<td>". $row_flights['Takeoff_Time'] . "</td>";
-                      echo "<td>". $row_flights['Landing_Time'] . "</td>";
-                      echo "<td>". $row_flights['Airbourne_Time'] . "</td>";
-                      echo "<td><strong>". $row_flights['Landings'] . "</strong></td>";
+                    echo "<td>". $row_flights['Flt_No'] . "</td>";
+                    echo "<td>". $row_flights['Captain'] . "</td>";
+                    echo "<td>". $row_flights['P2_Passenger'] . "</td>";
+                    echo "<td>". $row_flights['From_Airport'] . "</td>";
+                    echo "<td>". $row_flights['To_Airport'] . "</td>";
+                    echo "<td>". $row_flights['Engine_Start_Up'] . "</td>";
+                    echo "<td>". $row_flights['Engine_Shutdown'] . "</td>";
+                    echo "<td><strong>". $row_flights['Engine_Runtime'] . "</strong></td>";
+                    echo "<td>". $row_flights['Takeoff_Time'] . "</td>";
+                    echo "<td>". $row_flights['Landing_Time'] . "</td>";
+                    echo "<td>". $row_flights['Airbourne_Time'] . "</td>";
+                    echo "<td><strong>". $row_flights['Landings'] . "</strong></td>";
                     echo "</tr>";
                   }
                   echo "</table>";
                   mysqli_free_result($result_dlog_flights);
 
+                  //Fuel/Oil Record
+                  $sql_dlog_fuel_oil = "
+                  SELECT Flt_No, Uplift_Fuel, Uplift_Oil, Departure_Fuel, Departure_Oil_OK, Arrival_Fuel, Arrival_Oil_OK, Defects FROM dlog_fuel_oil
+                  WHERE dlog_id = ".$row['ID']."
+                  order by flt_no";
+                  $result_dlog_fuel_oil = mysqli_query($link, $sql_dlog_fuel_oil);
+                  if (mysqli_num_rows($result_dlog_fuel_oil) > 0) {
+                      echo "<p><strong>FUEL/OIL RECORD - Litres</strong></p>";
+                      echo "<table class='table table-bordered' style='width: 60%'>";
+                      echo "<tr>";
+                      echo "<td style='width: 10%'>Flight No</td>";
+                      echo "<td style='width: 10%'>Uplift Fuel</td>";
+                      echo "<td style='width: 10%'>Uplift Oil</td>";
+                      echo "<td style='width: 10%'>Departure Fuel</td>";
+                      echo "<td style='width: 10%; text-align:center;'>Departure Oil OK?</td>";
+                      echo "<td style='width: 10%'>Arrival Fuel</td>";
+                      echo "<td style='width: 10%; text-align:center;'>Arrival Oil OK?</td>";
+                      echo "<td style='width: 30%'>Defects</td>";
+                      echo "</tr>";
+                    while ($row_fuel_oil = mysqli_fetch_array($result_dlog_fuel_oil)) {
+                      echo "<tr>";
+                      echo "<td>". $row_fuel_oil['Flt_No'] . "</td>";
+                      echo "<td>". $row_fuel_oil['Uplift_Fuel'] . " L</td>";
+                      echo "<td>". $row_fuel_oil['Uplift_Oil'] . " L</td>";
+                      echo "<td>". $row_fuel_oil['Departure_Fuel'] . " L</td>";
+                      if ($row_fuel_oil['Departure_Oil_OK'] == '1') {echo "<td style='text-align:center; color: white; font-weight: bold; background-color: green;'>Yes";} else {echo "<td style='text-align:center; color: white; font-weight: bold; background-color: red;'>No";}; echo "</td>";
+                      echo "<td>". $row_fuel_oil['Arrival_Fuel'] . " L</td>";
+                      if ($row_fuel_oil['Arrival_Oil_OK'] == '1') {echo "<td style='text-align:center; color: white; font-weight: bold; background-color: green;'>Yes";} else {echo "<td style='text-align:center; color: white; font-weight: bold; background-color: red;'>No";}; echo "</td>";
+                      if ($row_fuel_oil['Defects'] == 'NIL') {echo "<td>". $row_fuel_oil['Defects'];} else {echo "<td style='background-color: yellow;'>". $row_fuel_oil['Defects'];}; echo "</td>";
+                      echo "</tr>";
+                    }
+                    echo "</table>";
+                    echo "</td></tr>";
+                  } else { echo "<p><strong>FUEL/OIL RECORD: No records found for this Flight Log</strong><p>"; }
+                  mysqli_free_result($result_dlog_fuel_oil);
+                  echo "</td></tr><tr><td colspan=5></td></tr>";
                 }
                 echo "</table>";
                 // Free result set
                 mysqli_free_result($result_dlog);
               } else {
-                echo "<h3>No flight logs matching your callsign were found.</h3>";}
+                echo "<p><strong>No flight logs matching your callsign were found.</strong></p>";}
 
 
           // Close connection
@@ -161,11 +196,8 @@ require_once "config.php";
 </html>
 
 <script>
-    //var fd = Date.today().clearTime().moveToFirstDayOfMonth();
-    //var firstday = fd.toString("dd/MM/yyyy");
-    //var ld = Date.today().clearTime().moveToLastDayOfMonth();
-    //var lastday = ld.toString("dd/MM/yyyy");
      $(document).ready(function(){
+       var mth_selector = 0;
           $.datepicker.setDefaults({
                dateFormat: 'dd-mm-yy'
           });
@@ -173,13 +205,16 @@ require_once "config.php";
                $("#from_date").datepicker();
                $("#to_date").datepicker();
           });
+
+          //Prev/Current/Next Month Functions
           $('#prevmonth').click(function(){
-              var from_date = '01-09-2020';
-              var to_date = '30-09-2020';
+            mth_selector = mth_selector-1;
+            var frmd = Date.today().addMonths(mth_selector).clearTime().moveToFirstDayOfMonth().toString("dd-MM-yyyy");
+            var tod = Date.today().addMonths(mth_selector).clearTime().moveToLastDayOfMonth().toString("dd-MM-yyyy");
               $.ajax({
                    url:"dlog-filter.php",
                    method:"POST",
-                   data:{from_date:from_date, to_date:to_date},
+                     data:{from_date:frmd, to_date:tod},
                    success:function(data)
                    {
                         $('#order_table').html(data);
@@ -187,12 +222,13 @@ require_once "config.php";
               });
             });
             $('#currmonth').click(function(){
-                var from_date = '01-10-2020';
-                var to_date = '31-10-2020';
+              mth_selector = 0;
+              var frmd = Date.today().clearTime().moveToFirstDayOfMonth().toString("dd-MM-yyyy");
+              var tod = Date.today().clearTime().moveToLastDayOfMonth().toString("dd-MM-yyyy");
                 $.ajax({
                      url:"dlog-filter.php",
                      method:"POST",
-                     data:{from_date:from_date, to_date:to_date},
+                     data:{from_date:frmd, to_date:tod},
                      success:function(data)
                      {
                           $('#order_table').html(data);
@@ -200,12 +236,13 @@ require_once "config.php";
                 });
               });
               $('#nextmonth').click(function(){
-                  var from_date = '01-11-2020';
-                  var to_date = '30-11-2020';
+                  mth_selector = mth_selector + 1;
+                  var frmd = Date.today().addMonths(mth_selector).clearTime().moveToFirstDayOfMonth().toString("dd-MM-yyyy");
+                  var tod = Date.today().addMonths(mth_selector).clearTime().moveToLastDayOfMonth().toString("dd-MM-yyyy");
                   $.ajax({
                        url:"dlog-filter.php",
                        method:"POST",
-                       data:{from_date:from_date, to_date:to_date},
+                       data:{from_date:frmd, to_date:tod},
                        success:function(data)
                        {
                             $('#order_table').html(data);

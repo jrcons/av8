@@ -9,6 +9,12 @@ p {
   padding: 0 20px;
 }
 
+.av8tr {
+  background-color: #5BC0DE;
+  color: white;
+  font-weight: bold;
+}
+
 .av8_body {
   font-size: 14px;
   background-image: url("/GSHMI/assets/images/G-SHMI_landing_bw.jpg");
@@ -30,7 +36,7 @@ p {
 /* Blue Table with Sections */
 table.blueTable {
   border: 1px solid #1C6EA4;
-  background-color: #CAC6EE;
+  background-color: white;
   text-align: left;
   border-collapse: collapse;
 }
@@ -41,7 +47,7 @@ table.blueTable td, table.blueTable th {
 }
 
 table.blueTable tbody td {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: bold;
   color: #1C08C7;
 
