@@ -9,48 +9,86 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 // Include config file
 require_once "config.php";
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <title>Add Flight Log</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
-  <style type="text/css">
-    h4 {
-      font-weight: bold;
-      text-align: center;
-    }
-    .header-av8 {
-      font-family: Impact, Charcoal, sans-serif;
-      font-size: 30px;
-      text-align: center;
-    }
-    .page-header-av8 {
-      margin: 10px 0 10px;
-      border-bottom: 1px solid #eee;
-    }
-    body{
-        font: 14px sans-serif;
-        background-image: url("/GSHMI/assets/images/G-SHMI_landing_bw.jpg");
-        no-repeat center center fixed;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;}
-    .wrapper{ width: 500px; padding: 50px; }
-  </style>
+  <head>
+    <meta charset="UTF-8">
+    <title>Add Daily Technical Log for <?php echo CALLSIGN?></title>
+    <link rel="stylesheet" href="av8_style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="date.js"></script>
+    <style type="text/css">
+    </style>
 </head>
 
-<body>
-  <div class="page-header-av8">
-    <a href="welcome.php" class="btn btn-warning">Back</a>
-    <a href="logout.php" class="btn btn-danger">Sign Out</a></h4>
-  </div>
-  <p class="btn btn-success btn-block" style="text-align:left; padding-left:6px;">
-      <svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-bezier2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <body>
+    <!-- Header -->
+    <div class="page-header-av8">
+      Hi, <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>!
+      <a href="welcome.php" class="btn btn-warning">Back</a>
+      <a href="logout.php" class="btn btn-danger">Sign Out</a></h4>
+    </div>
+    <p class="btn btn-success btn-block" style="text-align:left; padding-left:6px;">
+        <svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-bezier2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" d="M1 2.5A1.5 1.5 0 0 1 2.5 1h1A1.5 1.5 0 0 1 5 2.5h4.134a1 1 0 1 1 0 1h-2.01c.18.18.34.381.484.605.638.992.892 2.354.892 3.895 0 1.993.257 3.092.713 3.7.356.476.895.721 1.787.784A1.5 1.5 0 0 1 12.5 11h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5H6.866a1 1 0 1 1 0-1h1.711a2.839 2.839 0 0 1-.165-.2C7.743 11.407 7.5 10.007 7.5 8c0-1.46-.246-2.597-.733-3.355-.39-.605-.952-1-1.767-1.112A1.5 1.5 0 0 1 3.5 5h-1A1.5 1.5 0 0 1 1 3.5v-1zM2.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm10 10a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"/>
-      </svg>
-      Add New Flight Log for G-SHMI</p>
-</body>
+      </svg>Add Aicraft Daily Technical Log for <?php echo CALLSIGN?>
+    </p>
+
+      <!-- Body -->
+    <div class="container" style="width:99%">
+      <table class='table' style="width:50%">
+        <tr>
+          <td>
+            <input type="text" name="select_date" id="select_date" class="form-control" placeholder="Choose a Date" />
+          </td>
+          <td>
+            <input type="button" name="select_date_btn" id="select_date_btn" value="Select Date" class="btn btn-info" />
+          </td>
+        </tr>
+      </table>
+      <div style="clear:both"></div>
+      <div id="insert_table">
+        <p>Select a date. Based on the selection, you will create a new Daily Technical Log entry (if there isn't one created already for the selected date) or insert a new Flight into an existing Technical log.</p>
+      </div>
+    </div>
+  </body>
 </html>
+
+<script>
+     $(document).ready(function(){
+
+           $.datepicker.setDefaults({
+                   dateFormat: 'dd-mm-yy'
+              });
+
+            $(function(){
+              $("#select_date").datepicker();
+            });
+
+      //Filter Function
+      $('#select_date_btn').click(function(){
+           var select_date = $('#select_date').val();
+           if (select_date != '')
+           {
+             $.ajax({
+             url:"dlog-date-insert.php",
+             method:"POST",
+             data:{select_date:select_date},
+             success:function(data)
+             {
+                  $('#insert_table').html(data);
+             }
+           });
+          }
+           else
+           {
+                alert("Please Select Flight Date");
+           }
+          });
+
+      });
+</script>

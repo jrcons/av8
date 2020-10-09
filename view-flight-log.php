@@ -26,16 +26,20 @@ require_once "config.php";
   </head>
 
   <body>
+    <!-- Header -->
     <div class="page-header-av8">
+      Hi, <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>!
       <a href="welcome.php" class="btn btn-warning">Back</a>
       <a href="logout.php" class="btn btn-danger">Sign Out</a></h4>
     </div>
     <p class="btn btn-primary btn-block" style="text-align:left; padding-left:6px;">
       <svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" d="M4 0h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z" />
-        <path fill-rule="evenodd" d="M4.5 10.5A.5.5 0 0 1 5 10h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 4h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
-      </svg>G-SHMI Flight Logs (Sorted By Date, Descending)
+      <path fill-rule="evenodd" d="M4 0h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z" />
+      <path fill-rule="evenodd" d="M4.5 10.5A.5.5 0 0 1 5 10h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0-2A.5.5 0 0 1 5 4h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
+      </svg><?php echo CALLSIGN?> Flight Logs (Sorted By Date, Descending)
     </p>
+
+    <!-- Body -->
     <div class="container" style="width:95%">
       <table class='table'>
         <tr>
@@ -113,12 +117,12 @@ require_once "config.php";
                     df.p2_passenger P2_Passenger,
                     df.from_airport From_Airport,
                     df.to_airport To_Airport,
-                    date_format(df.engine_start_up, '%h:%i') Engine_Start_Up,
-                    date_format(df.engine_shutdown, '%h:%i') Engine_Shutdown,
-                    date_format(df.engine_runtime, '%h:%i') Engine_Runtime,
-                    date_format(df.takeoff_time, '%h:%i') Takeoff_Time,
-                    date_format(df.landing_time, '%h:%i') Landing_Time,
-                    date_format(df.airbourne_time, '%h:%i') Airbourne_Time,
+                    concat(lpad(est_h,2,0),':',lpad(est_m,2,0)) Engine_Start_Up,
+                    concat(lpad(esd_h,2,0), ':', lpad(esd_m,2,0)) Engine_Shutdown,
+                    concat(lpad(er_h,2,0), ':', lpad(er_m,2,0)) Engine_Runtime,
+                    concat(lpad(to_h,2,0), ':', lpad(to_m,2,0)) Takeoff_Time,
+                    concat(lpad(la_h,2,0), ':', lpad(la_m,2,0))  Landing_Time,
+                    concat(lpad(ab_h,2,0), ':', lpad(ab_m,2,0)) Airbourne_Time,
                     df.landings Landings
                     FROM dlog_flights df
                     WHERE df.dlog_id = ".$row['ID']."
@@ -196,78 +200,81 @@ require_once "config.php";
 </html>
 
 <script>
-     $(document).ready(function(){
-       var mth_selector = 0;
-          $.datepicker.setDefaults({
-               dateFormat: 'dd-mm-yy'
-          });
-          $(function(){
-               $("#from_date").datepicker();
-               $("#to_date").datepicker();
-          });
+  $(document).ready(function(){
+    var mth_selector = 0;
 
-          //Prev/Current/Next Month Functions
-          $('#prevmonth').click(function(){
-            mth_selector = mth_selector-1;
-            var frmd = Date.today().addMonths(mth_selector).clearTime().moveToFirstDayOfMonth().toString("dd-MM-yyyy");
-            var tod = Date.today().addMonths(mth_selector).clearTime().moveToLastDayOfMonth().toString("dd-MM-yyyy");
-              $.ajax({
-                   url:"dlog-filter.php",
-                   method:"POST",
-                     data:{from_date:frmd, to_date:tod},
-                   success:function(data)
-                   {
-                        $('#order_table').html(data);
-                   }
-              });
-            });
-            $('#currmonth').click(function(){
-              mth_selector = 0;
-              var frmd = Date.today().clearTime().moveToFirstDayOfMonth().toString("dd-MM-yyyy");
-              var tod = Date.today().clearTime().moveToLastDayOfMonth().toString("dd-MM-yyyy");
+        $.datepicker.setDefaults({
+          dateFormat: 'dd-mm-yy'
+        });
+        $(function(){
+          $("#from_date").datepicker();
+          $("#to_date").datepicker();
+        });
+
+    //Prev/Current/Next Month Functions
+    $('#prevmonth').click(function(){
+      mth_selector = mth_selector-1;
+      var frmd = Date.today().addMonths(mth_selector).clearTime().moveToFirstDayOfMonth().toString("dd-MM-yyyy");
+      var tod = Date.today().addMonths(mth_selector).clearTime().moveToLastDayOfMonth().toString("dd-MM-yyyy");
+        $.ajax({
+             url:"dlog-filter.php",
+             method:"POST",
+               data:{from_date:frmd, to_date:tod},
+             success:function(data)
+             {
+                  $('#order_table').html(data);
+             }
+        });
+      });
+    $('#currmonth').click(function(){
+      mth_selector = 0;
+      var frmd = Date.today().clearTime().moveToFirstDayOfMonth().toString("dd-MM-yyyy");
+      var tod = Date.today().clearTime().moveToLastDayOfMonth().toString("dd-MM-yyyy");
+        $.ajax({
+             url:"dlog-filter.php",
+             method:"POST",
+             data:{from_date:frmd, to_date:tod},
+             success:function(data)
+             {
+                  $('#order_table').html(data);
+             }
+        });
+      });
+      $('#nextmonth').click(function(){
+          mth_selector = mth_selector + 1;
+          var frmd = Date.today().addMonths(mth_selector).clearTime().moveToFirstDayOfMonth().toString("dd-MM-yyyy");
+          var tod = Date.today().addMonths(mth_selector).clearTime().moveToLastDayOfMonth().toString("dd-MM-yyyy");
+          $.ajax({
+               url:"dlog-filter.php",
+               method:"POST",
+               data:{from_date:frmd, to_date:tod},
+               success:function(data)
+               {
+                    $('#order_table').html(data);
+               }
+          });
+        });
+
+      //Filter Function
+      $('#filter').click(function(){
+           var from_date = $('#from_date').val();
+           var to_date = $('#to_date').val();
+           if(from_date != '' && to_date != '')
+           {
                 $.ajax({
                      url:"dlog-filter.php",
                      method:"POST",
-                     data:{from_date:frmd, to_date:tod},
+                     data:{from_date:from_date, to_date:to_date},
                      success:function(data)
                      {
                           $('#order_table').html(data);
                      }
                 });
-              });
-              $('#nextmonth').click(function(){
-                  mth_selector = mth_selector + 1;
-                  var frmd = Date.today().addMonths(mth_selector).clearTime().moveToFirstDayOfMonth().toString("dd-MM-yyyy");
-                  var tod = Date.today().addMonths(mth_selector).clearTime().moveToLastDayOfMonth().toString("dd-MM-yyyy");
-                  $.ajax({
-                       url:"dlog-filter.php",
-                       method:"POST",
-                       data:{from_date:frmd, to_date:tod},
-                       success:function(data)
-                       {
-                            $('#order_table').html(data);
-                       }
-                  });
-                });
-          $('#filter').click(function(){
-               var from_date = $('#from_date').val();
-               var to_date = $('#to_date').val();
-               if(from_date != '' && to_date != '')
-               {
-                    $.ajax({
-                         url:"dlog-filter.php",
-                         method:"POST",
-                         data:{from_date:from_date, to_date:to_date},
-                         success:function(data)
-                         {
-                              $('#order_table').html(data);
-                         }
-                    });
-               }
-               else
-               {
-                    alert("Please Select Flight Dates");
-               }
-          });
+           }
+           else
+           {
+                alert("Please Select Flight Dates");
+           }
+      });
      });
 </script>

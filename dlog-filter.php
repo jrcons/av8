@@ -1,4 +1,11 @@
 <?php
+// Initialize the session
+session_start();
+// Check if the user is logged in, if not then redirect him to login page
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("location: login.php");
+    exit;
+}
 // Include config file
 require_once "config.php";
  //filter.php
@@ -57,22 +64,22 @@ require_once "config.php";
                        <td>Airborne Time</td>
                        <td><strong>Landings</strong></td>
                       </tr>';
-                     $sql_dlog_flights = '
+                     $sql_dlog_flights = "
                        SELECT df.flt_no Flt_No,
                        captain Captain,
                        df.p2_passenger P2_Passenger,
                        df.from_airport From_Airport,
                        df.to_airport To_Airport,
-                       date_format(df.engine_start_up, "%h:%i") Engine_Start_Up,
-                       date_format(df.engine_shutdown, "%h:%i") Engine_Shutdown,
-                       date_format(df.engine_runtime, "%h:%i") Engine_Runtime,
-                       date_format(df.takeoff_time, "%h:%i") Takeoff_Time,
-                       date_format(df.landing_time, "%h:%i") Landing_Time,
-                       date_format(df.airbourne_time, "%h:%i") Airbourne_Time,
+                       concat(lpad(est_h,2,0),':',lpad(est_m,2,0)) Engine_Start_Up,
+                       concat(lpad(esd_h,2,0), ':', lpad(esd_m,2,0)) Engine_Shutdown,
+                       concat(lpad(er_h,2,0), ':', lpad(er_m,2,0)) Engine_Runtime,
+                       concat(lpad(to_h,2,0), ':', lpad(to_m,2,0)) Takeoff_Time,
+                       concat(lpad(la_h,2,0), ':', lpad(la_m,2,0))  Landing_Time,
+                       concat(lpad(ab_h,2,0), ':', lpad(ab_m,2,0)) Airbourne_Time,
                        df.landings Landings
                        FROM dlog_flights df
-                       WHERE df.dlog_id = '.$row["ID"].'
-                       ORDER BY df.flt_no';
+                       WHERE df.dlog_id = ".$row["ID"]."
+                       ORDER BY df.flt_no";
                      $result_dlog_flights = mysqli_query($link, $sql_dlog_flights);
                      while ($row_flights = mysqli_fetch_array($result_dlog_flights)) {
                        $output .= '<tr>

@@ -65,6 +65,7 @@ require_once "config.php";
 
 <body>
   <div class="page-header-av8">
+    Hi, <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>!
     <a href="welcome.php" class="btn btn-warning">Back</a>
     <a href="logout.php" class="btn btn-danger">Sign Out</a></h4>
   </div>
