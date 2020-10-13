@@ -14,7 +14,7 @@ require_once "config.php";
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>View <?php echo CALLSIGN?> Flight Log</title>
+    <title>View <?php echo CALLSIGN?> Daily Technical Log</title>
     <link rel="stylesheet" href="av8_style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
@@ -30,7 +30,7 @@ require_once "config.php";
     <div class="page-header-av8">
       Hi, <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>!
       <a href="welcome.php" class="btn btn-warning">Back</a>
-      <a href="logout.php" class="btn btn-danger">Sign Out</a></h4>
+      <a href="logout.php" class="btn btn-danger">Sign Out</a>
     </div>
     <p class="btn btn-primary btn-block" style="text-align:left; padding-left:6px;">
       <svg width="3em" height="3em" viewBox="0 0 16 16" class="bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -75,7 +75,7 @@ require_once "config.php";
         concat(floor(d.total_hrs_to_date/60), ' : ',d.total_hrs_to_date - (floor(d.total_hrs_to_date/60)*60))
         Total_Hrs_To_Date,
         CONCAT(CASE WHEN floor(d.hours_to_next_check/60) > 9 THEN floor(d.hours_to_next_check/60) WHEN floor(d.hours_to_next_check/60) <= 0 THEN '00' ELSE LPAD(FLOOR(d.hours_to_next_check/60),2,'0') END,':',CASE WHEN d.hours_to_next_check < 0 then '00' else case WHEN floor(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60)) > 9 THEN floor(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60)) ELSE LPAD(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60),2,'0') END END) Hours_To_Next_Check
-        FROM dlog d WHERE d.callsign = '".CALLSIGN."' ORDER BY d.log_date desc";
+        FROM dlog d WHERE exists (select 1 from dlog_flights where dlog_id = d.id) and d.callsign = '".CALLSIGN."' ORDER BY d.log_date desc";
 
         $result_dlog = mysqli_query($link, $sql_dlog);
             if (mysqli_num_rows($result_dlog) > 0) {
@@ -175,12 +175,12 @@ require_once "config.php";
                       if ($row_fuel_oil['Departure_Oil_OK'] == '1') {echo "<td style='text-align:center; color: white; font-weight: bold; background-color: green;'>Yes";} else {echo "<td style='text-align:center; color: white; font-weight: bold; background-color: red;'>No";}; echo "</td>";
                       echo "<td>". $row_fuel_oil['Arrival_Fuel'] . " L</td>";
                       if ($row_fuel_oil['Arrival_Oil_OK'] == '1') {echo "<td style='text-align:center; color: white; font-weight: bold; background-color: green;'>Yes";} else {echo "<td style='text-align:center; color: white; font-weight: bold; background-color: red;'>No";}; echo "</td>";
-                      if ($row_fuel_oil['Defects'] == 'NIL') {echo "<td>". $row_fuel_oil['Defects'];} else {echo "<td style='background-color: yellow;'>". $row_fuel_oil['Defects'];}; echo "</td>";
+                      if (strtoupper($row_fuel_oil['Defects']) == 'NIL') {echo "<td>". $row_fuel_oil['Defects'];} else {echo "<td style='background-color: yellow;'>". $row_fuel_oil['Defects'];}; echo "</td>";
                       echo "</tr>";
                     }
                     echo "</table>";
                     echo "</td></tr>";
-                  } else { echo "<p><strong>FUEL/OIL RECORD: No records found for this Flight Log</strong><p>"; }
+                  } else { echo "<p><strong>FUEL/OIL RECORD: No records found for this Daily Technical Log</strong><p>"; }
                   mysqli_free_result($result_dlog_fuel_oil);
                   echo "</td></tr><tr><td colspan=5></td></tr>";
                 }
@@ -188,7 +188,7 @@ require_once "config.php";
                 // Free result set
                 mysqli_free_result($result_dlog);
               } else {
-                echo "<p><strong>No flight logs matching your callsign were found.</strong></p>";}
+                echo "<p><strong>No Daily Technical Logs matching your Aircraft Callsign were found.</strong></p>";}
 
 
           // Close connection

@@ -25,7 +25,7 @@ require_once "config.php";
       concat(floor(d.total_hrs_to_date/60), ' : ',d.total_hrs_to_date - (floor(d.total_hrs_to_date/60)*60))
       Total_Hrs_To_Date,
       CONCAT(CASE WHEN floor(d.hours_to_next_check/60) > 9 THEN floor(d.hours_to_next_check/60) WHEN floor(d.hours_to_next_check/60) <= 0 THEN '00' ELSE LPAD(FLOOR(d.hours_to_next_check/60),2,'0') END,':',CASE WHEN d.hours_to_next_check < 0 then '00' else case WHEN floor(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60)) > 9 THEN floor(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60)) ELSE LPAD(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60),2,'0') END END) Hours_To_Next_Check
-      FROM dlog d WHERE d.callsign = '".CALLSIGN."' AND d.Log_Date BETWEEN '".$from_date_conv."' AND '".$to_date_conv." ORDER BY d.log_date desc'
+      FROM dlog d WHERE exists (select 1 from dlog_flights where dlog_id = d.id) and  d.callsign = '".CALLSIGN."' AND d.Log_Date BETWEEN '".$from_date_conv."' AND '".$to_date_conv."' ORDER BY d.log_date desc
       ";
       $result = mysqli_query($link, $query);
       $output .= '
@@ -131,7 +131,9 @@ require_once "config.php";
                      }
                      $output .= "</table>";
                      $output .= "</td></tr>";
-                     } else { $output .= "<p><strong>FUEL/OIL RECORD: No records found for this Flight Log</strong><p>"; }
+                     } else { $output .= "<p><strong>FUEL/OIL RECORD: No records found for this Daily Technical Log</strong><p>";
+                              $output .= "</td></tr><tr><td colspan=5></td></tr>";
+                            }
 
            }
       }

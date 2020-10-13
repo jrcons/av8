@@ -543,6 +543,16 @@ require_once "config.php";
       </div>
     </div>
     <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="heading-av8-3">
+        <h5 class="panel-title">
+          <a role="button" data-toggle="collapse" class="accordion-plus-toggle collapsed" data-parent="#accordion7401210" href="#collapse-av8-3" aria-expanded="false" aria-controls="collapse-av8-3">G-SHMI Current Permit (08/10/2020)</a>
+        </h5>
+      </div>
+      <div id="collapse-av8-3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-av8-3">
+        <h4><a href="./assets/documents/permit shmi_cov_2020.pdf" download="permit shmi_cov_2020.pdf">Download a copy (PDF) of the current permit to your local tablet/PC</a></h4>
+      </div>
+    </div>
+    <div class="panel panel-default">
       <div class="panel-heading" role="tab" id="heading411391">
         <h5 class="panel-title">
           <a role="button" data-toggle="collapse" class="accordion-plus-toggle collapsed" data-parent="#accordion7401210" href="#collapse411391" aria-expanded="false" aria-controls="collapse411391">Aircraft Insurance Document</a>

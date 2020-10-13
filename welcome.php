@@ -42,7 +42,8 @@ require_once "config.php";
                       echo "<tr><td>Hours to Next Check:</td><td>" . $row['Hrs_to_Next_Check'] . "</td></tr>";
                       echo "<tr><td>Last Flown Date:</td><td>" . $row['Last_Flown_Date'] . "</td></tr>";
                       echo "<tr><td>Last Arrival Fuel:</td><td>" . $row['Last_Arrival_Fuel'] . " Liters</td></tr>";
-                      echo "<tr><td>Last Recorded Defects:</td><td>" . $row['Last_Defects'] . "</td></tr>";
+                      if (strtoupper($row['Last_Defects']) == 'NIL') {echo "<tr><td>Last Flight Defects:</td><td>" . $row['Last_Defects'] . "</td></tr>";} else {echo "<tr><td>Last Flight Defects:</td><td style='background-color: yellow;'>" . $row['Last_Defects'] . "</td></tr>";}
+                      //echo "<tr><td>Last Flight Defects:</td><td>" . $row['Last_Defects'] . "</td></tr>";
                       echo "<tr><td>Insurance Due Date:</td><td>" . $row['Insurance_Due_Date'] . "</td></tr>";
                       echo "<tr><td>Permit Due Date:</td><td>" . $row['Permit_Due_Date'] . "</td></tr>";
                     }

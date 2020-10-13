@@ -8,6 +8,15 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 }
 // Include config file
 require_once "config.php";
+
+$query = "SELECT DATE_FORMAT(init_date, '%d/%m/%Y') init_date FROM aircraft WHERE callsign = '".CALLSIGN."'";
+$result = mysqli_query($link, $query);
+if(mysqli_num_rows($result) > 0) {
+  while($row = mysqli_fetch_array($result)) {
+    $init_date = $row["init_date"];
+  }
+}
+mysqli_free_result($result);
 ?>
 
 <!DOCTYPE html>
@@ -43,14 +52,14 @@ require_once "config.php";
       <table class='table' style="width:50%">
         <tr>
           <td>
-            <input type="text" name="select_date" id="select_date" class="form-control" placeholder="Choose a Date" />
+            <input type="text" name="select_date" id="select_date" value="<?php echo date('d-m-Y');?>" class="form-control" placeholder="Choose a Date" />
           </td>
           <td>
             <input type="button" name="select_date_btn" id="select_date_btn" value="Select Date" class="btn btn-info" />
           </td>
         </tr>
       </table>
-      <div style="clear:both"></div>
+      <!--<div style="clear:both"></div>-->
       <div id="insert_table">
         <p>Select a date. Based on the selection, you will create a new Daily Technical Log entry (if there isn't one created already for the selected date) or insert a new Flight into an existing Technical log.</p>
       </div>
@@ -61,7 +70,7 @@ require_once "config.php";
 <script>
      $(document).ready(function(){
 
-           $.datepicker.setDefaults({
+         $.datepicker.setDefaults({
                    dateFormat: 'dd-mm-yy'
               });
 
@@ -71,24 +80,36 @@ require_once "config.php";
 
       //Filter Function
       $('#select_date_btn').click(function(){
-           var select_date = $('#select_date').val();
-           if (select_date != '')
-           {
-             $.ajax({
-             url:"dlog-date-insert.php",
-             method:"POST",
-             data:{select_date:select_date},
-             success:function(data)
-             {
-                  $('#insert_table').html(data);
-             }
-           });
-          }
+           var TodayDate = new Date();
+           var select_date = new Date(Date.parse($("#select_date").val()));
+           var id = "<?php echo $init_date?>";
+           var sel_date = $('#select_date').val();
+           var from = id.split("/");
+           var init_date = new Date(from[2], from[1] - 1, from[0]);
+
+           if (select_date != '') {
+             if ( select_date < init_date ) {
+               alert("Please Select a Date higher than the Aircraft Initialization Date (" + id + ")");
+             } else if (select_date > TodayDate) {
+               alert("Please do not select a date in the future");
+             } else {
+               $.ajax({
+               url:"dlog-date-insert.php",
+               method:"POST",
+               data:{select_date:sel_date},
+               success:function(data)
+                 {
+                      $('#insert_table').html(data);
+                 }
+               });
+              }
+            }
            else
            {
                 alert("Please Select Flight Date");
            }
-          });
+
+       });
 
       });
 </script>

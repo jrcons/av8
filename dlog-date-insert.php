@@ -30,54 +30,86 @@ require_once "config.php";
     $result = mysqli_query($link, $query);
     if(mysqli_num_rows($result) > 0) {
       while($row = mysqli_fetch_array($result)) {
-        $qmax = 'SELECT MAX(flt_no)+1 Next_Flt_No FROM dlog_flights where dlog_id = '.$row["ID"].'';
+        $qmax = 'SELECT ifnull(MAX(flt_no)+1,1) Next_Flt_No FROM dlog_flights where dlog_id = '.$row["ID"].'';
         $resmax = mysqli_query($link, $qmax);
         while($rowmax = mysqli_fetch_array($resmax)) {
           $Next_Flt_No = $rowmax["Next_Flt_No"];
-          $output .= '<p>Daily Technical Log Found for this date. Adding Flight Number '.$Next_Flt_No.'</p>';
-
+          $msg = 'Daily Technical Logs Found for this date. Adding Flight Number';
+          if ($Next_Flt_No == 1) $msg = 'Daily Technical Logs Found for this date. No Flight Rows found. Adding Flight Number';
           $output .='
           <form action="dlog-insert.php" method="post">
             <input type="hidden" id="dlog_id_set" name="dlog_id_set" value="'.$row["ID"].'">
             <table class="table table-bordered" style="width: 100%">
             <colgroup>
-               <col span="1" style="width: 20%;"></col>
-               <col span="1" style="width: 40%;"></col>
-               <col span="1" style="width: 20%;"></col>
-               <col span="1" style="width: 20%;"></col>
+               <col span="1" style="width: 17%;"></col>
+               <col span="1" style="width: 17%;"></col>
+               <col span="1" style="width: 17%;"></col>
+               <col span="1" style="width: 17%;"></col>
+               <col span="1" style="width: 17%;"></col>
+               <col span="1" style="width: 15%;"></col>
             </colgroup>
+            <tr style="background-color:#337ab7; color: #fff">
+              <td colspan=3>' . $msg . ' ' . $Next_Flt_No . '</td>
+              <td align="right">Hours Flown This Date: <br><strong>'.$row["Total_Hrs_Today"].'</strong></td>
+              <td align="right">Total Hours Flown: <br><strong>'.$row["Total_Hrs_To_Date"].'</strong></td>
+              <td align="right">Hours to Next Check: <br><strong>'.$row["Hours_To_Next_Check"].'</strong></td>
+            </tr>
             <tr>
               <td>Flight No</td>
-              <td><input tabindex="1" type="text" name="Flt_No" id="Flt_No" readonly style="background-color: silver" value="'.$Next_Flt_No.'"></td>
+              <td colspan=3><input type="text" name="Flt_No" id="Flt_No" readonly style="background-color: silver" value="'.$Next_Flt_No.'"></td>
               <td>Enginer Start-Up</td>
-              <td><input tabindex="6" type="time" name="Engine_Start_Up" id="Engine_Start_Up"></td>
+              <td><input tabindex="5" type="time" name="Engine_Start_Up" id="Engine_Start_Up" required></td>
             </tr>
             <tr>
               <td>Captain</td>
-              <td><input tabindex="2" type="text" name="Captain" id="Captain" value="'.$_SESSION["username"].'"></td>
+              <td colspan=3><input tabindex="1" type="text" name="Captain" id="Captain" value="'.$_SESSION["username"].'" required></td>
               <td>Engine Shutdown</td>
-              <td><input tabindex="7" type="time" name="Engine_Shutdown" id="Engine_Shutdown"></td>
+              <td><input tabindex="6" type="time" name="Engine_Shutdown" id="Engine_Shutdown" required></td>
             </tr>
             <tr>
               <td>P2 / Passenger</td>
-              <td><input tabindex="3" type="text" name="P2_Passenger" id="P2_Passenger"></td>
+              <td colspan=3><input tabindex="2" type="text" name="P2_Passenger" id="P2_Passenger" required></td>
               <td>Take Off Time</td>
-              <td><input tabindex="8" type="time" name="Takeoff_Time" id="Takeoff_Time"></td>
+              <td><input tabindex="7" type="time" name="Takeoff_Time" id="Takeoff_Time" required></td>
             </tr>
             <tr>
               <td>From</td>
-              <td><input tabindex="4" type="text" name="From_Airport" id="From_Airport" value="Gloucester EGBJ"></td>
+              <td colspan=3><input tabindex="3" type="text" name="From_Airport" id="From_Airport" value="Gloucester EGBJ" required></td>
               <td>Landing Time</td>
-              <td><input tabindex="9" type="time" name="Landing_Time" id="Landing_Time"></td>
+              <td><input tabindex="8" type="time" name="Landing_Time" id="Landing_Time" required></td>
             </tr>
             <tr>
               <td>To</td>
-              <td><input tabindex="5" type="text" name="To_Airport" id="To_Airport" value="Gloucester EGBJ"></td>
+              <td colspan=3><input tabindex="4" type="text" name="To_Airport" id="To_Airport" value="Gloucester EGBJ" required></td>
               <td>Landings</td>
-              <td><input tabindex="10" type="number" name="Landings" id="Landings"></td>
+              <td><input tabindex="9" type="number" name="Landings" id="Landings" required></td>
+            </tr>
+            <tr style="background-color:#337ab7; color: #fff">
+              <td colspan=6">Fuel / Oil Log</td>
+            </tr>
+            <tr>
+              <td>Uplift Fuel</td>
+              <td><input tabindex="10" type="text" name="Uplift_Fuel" placeholder="Liters" id="Uplift_Fuel" required></td>
+              <td>Departure Fuel</td>
+              <td><input tabindex="12" type="text" name="Departure_Fuel" placeholder="Liters" id="Departure_Fuel" required></td>
+              <td>Arrival Fuel</td>
+              <td><input tabindex="14" type="text" name="Arrival_Fuel" placeholder="Liters" id="Arrival_Fuel" required></td>
+            </tr>
+            <tr>
+              <td>Uplift Oil</td>
+              <td><input tabindex="11" type="text" name="Uplift_Oil" placeholder="Liters" id="Uplift_Oil" required value="0"></td>
+              <td>Departure Oil OK?</td>
+              <td><input tabindex="13" type="checkbox" checked=checked name="Departure_Oil_OK" id="Departure_Oil_OK"></td>
+              <td>Arrival Oil OK?</td>
+              <td><input tabindex="15" type="checkbox" checked=checked name="Arrival_Oil_OK" id="Arrival_Oil_OK"></td>
+            </tr>
+            <tr>
+              <td>Defects</td>
+              <td colspan=5><textarea rows="4" cols="50" tabindex="16" name="Defects" value="NIL" id="Defects" required></textarea></td>
             </tr>
           </table>
-          <input type="submit" value="Submit">
+          <input type="submit" tabindex="17" value="Submit" class="btn btn-warning">
+          <a href="add-flight-log.php" tabindex="18" class="btn btn-danger">Cancel</a>
           </form>
           ';
           }
@@ -111,49 +143,76 @@ require_once "config.php";
       // Close statement
       mysqli_stmt_close($stmt);
 
-      $output .= '<p> No Daily Technical Log found for this date. Adding a new Technical Log Entry and Flight Number 1.</p>';
       $output .='
       <form action="dlog-insert.php" method="post">
         <input type="hidden" id="dlog_id_set" name="dlog_id_set" value="'.$new_log_id.'">
         <table class="table table-bordered" style="width: 100%">
         <colgroup>
-           <col span="1" style="width: 20%;"></col>
-           <col span="1" style="width: 40%;"></col>
-           <col span="1" style="width: 20%;"></col>
-           <col span="1" style="width: 20%;"></col>
+           <col span="1" style="width: 17%;"></col>
+           <col span="1" style="width: 17%;"></col>
+           <col span="1" style="width: 17%;"></col>
+           <col span="1" style="width: 17%;"></col>
+           <col span="1" style="width: 17%;"></col>
+           <col span="1" style="width: 15%;"></col>
         </colgroup>
-        <tr>
+        <tr style="background-color:#337ab7; color: #fff">
+          <td colspan=6>No Daily Technical Logs found for this date. Adding a new Technical Log Entry and Flight Number 1</td>
+        </tr>
           <td>Flight No</td>
-          <td><input tabindex="1" type="text" name="Flt_No" id="Flt_No" readonly style="background-color: silver" value="1"></td>
+          <td colspan=3><input tabindex="1" type="text" name="Flt_No" id="Flt_No" readonly style="background-color: silver" value="1"></td>
           <td>Enginer Start-Up</td>
           <td><input tabindex="6" type="time" name="Engine_Start_Up" id="Engine_Start_Up"></td>
         </tr>
         <tr>
           <td>Captain</td>
-          <td><input tabindex="2" type="text" name="Captain" id="Captain" value="'.$_SESSION["username"].'"></td>
+          <td colspan=3><input tabindex="2" type="text" name="Captain" id="Captain" value="'.$_SESSION["username"].'"></td>
           <td>Engine Shutdown</td>
           <td><input tabindex="7" type="time" name="Engine_Shutdown" id="Engine_Shutdown"></td>
         </tr>
         <tr>
           <td>P2 / Passenger</td>
-          <td><input tabindex="3" type="text" name="P2_Passenger" id="P2_Passenger"></td>
+          <td colspan=3><input tabindex="3" type="text" name="P2_Passenger" id="P2_Passenger"></td>
           <td>Take Off Time</td>
           <td><input tabindex="8" type="time" name="Takeoff_Time" id="Takeoff_Time"></td>
         </tr>
         <tr>
           <td>From</td>
-          <td><input tabindex="4" type="text" name="From_Airport" id="From_Airport" value="Gloucester EGBJ"></td>
+          <td colspan=3><input tabindex="4" type="text" name="From_Airport" id="From_Airport" value="Gloucester EGBJ"></td>
           <td>Landing Time</td>
           <td><input tabindex="9" type="time" name="Landing_Time" id="Landing_Time"></td>
         </tr>
         <tr>
           <td>To</td>
-          <td><input tabindex="5" type="text" name="To_Airport" id="To_Airport" value="Gloucester EGBJ"></td>
+          <td colspan=3><input tabindex="5" type="text" name="To_Airport" id="To_Airport" value="Gloucester EGBJ"></td>
           <td>Landings</td>
           <td><input tabindex="10" type="number" name="Landings" id="Landings"></td>
         </tr>
+        <tr style="background-color:#337ab7; color: #fff">
+          <td colspan=6">Fuel / Oil Log</td>
+        </tr>
+        <tr>
+          <td>Uplift Fuel</td>
+          <td><input tabindex="11" type="text" name="Uplift_Fuel" placeholder="Liters" id="Uplift_Fuel"></td>
+          <td>Departure Fuel</td>
+          <td><input tabindex="13" type="text" name="Departure_Fuel" placeholder="Liters" id="Departure_Fuel"></td>
+          <td>Arrival Fuel</td>
+          <td><input tabindex="15" type="text" name="Arrival_Fuel" placeholder="Liters" id="Arrival_Fuel"></td>
+        </tr>
+        <tr>
+          <td>Uplift Oil</td>
+          <td><input tabindex="12" type="text" name="Uplift_Oil" placeholder="Liters" id="Uplift_Oil"></td>
+          <td>Departure Oil OK?</td>
+          <td><input tabindex="14" type="checkbox" checked=checked name="Departure_Oil_OK" id="Departure_Oil_OK"></td>
+          <td>Arrival Oil OK?</td>
+          <td><input tabindex="16" type="checkbox" checked=checked name="Arrival_Oil_OK" id="Arrival_Oil_OK"></td>
+        </tr>
+        <tr>
+          <td>Defects</td>
+          <td colspan=5><textarea rows="4" cols="50 tabindex="17" name="Defects" value="NIL " id="Defects"></textarea></td>
+        </tr>
       </table>
-      <input type="submit" value="Submit">
+      <input type="submit" value="Submit" class="btn btn-warning">
+      <a href="add-flight-log.php" class="btn btn-danger">Cancel</a>
       </form>
       ';
     }
