@@ -81,9 +81,11 @@ mysqli_free_result($result);
       //Filter Function
       $('#select_date_btn').click(function(){
            var TodayDate = new Date();
-           var select_date = new Date(Date.parse($("#select_date").val()));
-           var id = "<?php echo $init_date?>";
            var sel_date = $('#select_date').val();
+           var dateParts = sel_date.split("-");
+           var select_date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+           //var select_date = new Date(Date.parse($("#select_date").val()));
+           var id = "<?php echo $init_date?>";
            var from = id.split("/");
            var init_date = new Date(from[2], from[1] - 1, from[0]);
 
@@ -94,7 +96,7 @@ mysqli_free_result($result);
                alert("Please do not select a date in the future");
              } else {
                $.ajax({
-               url:"dlog-date-insert.php",
+               url:"add-flight-form.php",
                method:"POST",
                data:{select_date:sel_date},
                success:function(data)

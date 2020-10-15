@@ -72,6 +72,7 @@ function timeDiff($firstTime,$lastTime) {
 
     // Set parameters
     $dlog_id = $_REQUEST['dlog_id_set'];
+    $dlog_date = $_REQUEST['dlog_date_set'];
     $user_id = $_SESSION["id"];
     $Flt_No = $_REQUEST['Flt_No'];
     $Captain = $_REQUEST['Captain'];
@@ -99,9 +100,7 @@ function timeDiff($firstTime,$lastTime) {
     $Uplift_Oil = $_REQUEST['Uplift_Oil'];
     $Departure_Fuel = $_REQUEST['Departure_Fuel'];
     if (!empty($_REQUEST['Departure_Oil_OK'])) {$Departure_Oil_OK=1;} else {$Departure_Oil_OK=0;};
-    //$Departure_Oil_OK = $_REQUEST['Departure_Oil_OK'];
     $Arrival_Fuel = $_REQUEST['Arrival_Fuel'];
-    //$Arrival_Oil_OK = $_REQUEST['Arrival_Oil_OK'];
     if (!empty($_REQUEST['Arrival_Oil_OK'])) {$Arrival_Oil_OK=1;} else {$Arrival_Oil_OK=0;};
     $Defects = $_REQUEST['Defects'];
     $er = $er_h*60+$er_m;
@@ -110,13 +109,43 @@ function timeDiff($firstTime,$lastTime) {
     $sql_flights = "INSERT INTO dlog_flights (dlog_id, user_id, Flt_No, Captain, P2_Passenger, From_Airport, To_Airport, est_h, est_m, esd_h, esd_m, er_h, er_m, to_h, to_m, la_h, la_m, ab_h, ab_m, Landings) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     prepared_query($link, $sql_flights, [$dlog_id, $user_id, $Flt_No, $Captain, $P2_Passenger, $From_Airport, $To_Airport, $est_h, $est_m, $esd_h, $esd_m, $er_h, $er_m, $to_h, $to_m, $la_h, $la_m, $ab_h, $ab_m, $Landings]);
 
-    //Daily Log Update statement
-    $upd_log = "UPDATE dlog SET total_hrs_today=total_hrs_today+?, total_hrs_to_date=total_hrs_to_date+?, hours_to_next_check=hours_to_next_check-? WHERE id=?";
-    prepared_query($link, $upd_log, [$er, $er, $er, $dlog_id]);
-
     // Fuel-Oil Insert statement
     $sql_fuel_oil = "INSERT INTO dlog_fuel_oil (dlog_id, Flt_No, Uplift_Fuel, Uplift_Oil, Departure_Fuel, Departure_Oil_OK, Arrival_Fuel, Arrival_Oil_OK, Defects) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     prepared_query($link, $sql_fuel_oil, [$dlog_id, $Flt_No, $Uplift_Fuel, $Uplift_Oil, $Departure_Fuel, $Departure_Oil_OK, $Arrival_Fuel, $Arrival_Oil_OK, $Defects]);
+
+    // Update Log totals for the day
+    $upd_log = "UPDATE dlog SET total_hrs_today=total_hrs_today+?, total_hrs_to_date=total_hrs_to_date+?, hours_to_next_check=hours_to_next_check-? WHERE id=?";
+    prepared_query($link, $upd_log, [$er, $er, $er, $dlog_id]);
+
+    //Get Totals for Next Logs
+    $cur_log_query = "select d.total_hrs_to_date, d.hours_to_next_check from dlog d where d.id = '".$dlog_id."'";
+    $result_cur_log = mysqli_query($link, $cur_log_query);
+    if (mysqli_num_rows($result_cur_log) > 0) {
+    while ($row_cur_log = mysqli_fetch_array($result_cur_log)) {
+      $tot_h_prev_upd = $row_cur_log['total_hrs_to_date'];
+      $h_next_check_upd = $row_cur_log['hours_to_next_check'];
+      }
+    }
+    mysqli_free_result($result_cur_log);
+
+    // Update Future Logs
+    $future_logs_query = "
+    SELECT d.id, d.log_date, d.total_hrs_today FROM dlog d where d.log_date > '" . $dlog_date . "' ORDER BY log_date";
+    $result_fl = mysqli_query($link, $future_logs_query);
+      if (mysqli_num_rows($result_fl) > 0) {
+        while ($row_fl = mysqli_fetch_array($result_fl)) {
+          $updated_tot_h = $tot_h_prev_upd + $row_fl ['total_hrs_today'];
+          $updated_hr_check = $h_next_check_upd - $row_fl ['total_hrs_today'];
+          $id = $row_fl ['id'];
+
+          $update_fl = "update dlog set total_hrs_to_date = ?, hours_to_next_check = ?, total_hrs_flown_prev = ?, hours_to_next_check_prev = ? where id = ?";
+          prepared_query ($link, $update_fl, [$updated_tot_h, $updated_hr_check, $tot_h_prev_upd, $h_next_check_upd, $id]);
+
+          $tot_h_prev_upd = $updated_tot_h;
+          $h_next_check_upd = $updated_hr_check;
+        }
+      }
+      mysqli_free_result($result_fl);
 
     //Presents current dlog
     $sql_dlog = "
@@ -126,7 +155,9 @@ function timeDiff($firstTime,$lastTime) {
     Total_Hrs_Today,
     concat(floor(d.total_hrs_to_date/60), ' : ',d.total_hrs_to_date - (floor(d.total_hrs_to_date/60)*60))
     Total_Hrs_To_Date,
-    CONCAT(CASE WHEN floor(d.hours_to_next_check/60) > 9 THEN floor(d.hours_to_next_check/60) WHEN floor(d.hours_to_next_check/60) <= 0 THEN '00' ELSE LPAD(FLOOR(d.hours_to_next_check/60),2,'0') END,':',CASE WHEN d.hours_to_next_check < 0 then '00' else case WHEN floor(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60)) > 9 THEN floor(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60)) ELSE LPAD(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60),2,'0') END END) Hours_To_Next_Check
+    CONCAT(case when hours_to_next_check > 0 then (lpad(floor(Hours_To_Next_Check/60),2,'0')) When CEILING(hours_To_Next_Check/60) <=1 then CONCAT('-',LPAD(-CEILING(hours_To_Next_Check/60),2,'0')) else CEILING(hours_To_Next_Check/60) END,':',
+    case when hours_to_next_check > 0 then LPAD(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60),2,'0') when -d.hours_to_next_check+(ceiling(d.hours_to_next_check/60)*60)<9 then CONCAT('0',-d.hours_to_next_check+(ceiling(d.hours_to_next_check/60)*60)) ELSE -d.hours_to_next_check+(ceiling(d.hours_to_next_check/60)*60) END)
+    Hours_To_Next_Check, case when Hours_To_Next_Check < 0 then '-' ELSE '+' END Is_Positive
     FROM dlog d WHERE d.callsign = '".CALLSIGN."' and ID = ".$dlog_id;
 
     echo "<p>Flight Record inserted in the Aircraft Technical Log. Here is today's Log:</p>";
@@ -148,7 +179,8 @@ function timeDiff($firstTime,$lastTime) {
                 echo "<td>" . $row['Log_Date'] . "</td>";
                 echo "<td>" . $row['Total_Hrs_Today'] . "</td>";
                 echo "<td>" . $row['Total_Hrs_To_Date'] . "</td>";
-                echo "<td>" . $row['Hours_To_Next_Check'] . "</td>";
+                if ($row['Is_Positive'] == '+') {echo "<td>". $row['Hours_To_Next_Check'];}
+                  else {echo "<td style='background-color: yellow; color: red;'>". $row['Hours_To_Next_Check'];}; echo "</td>";
               echo "</tr>";
             }
             echo "<tr style='background-color: #aecad6; background-image: linear-gradient(315deg, #aecad6 0%, #b8d3fe 74%);'><td colspan=5><table class='table table-bordered'><tr>";

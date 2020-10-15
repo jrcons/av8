@@ -24,7 +24,9 @@ require_once "config.php";
       Total_Hrs_Today,
       concat(floor(d.total_hrs_to_date/60), ' : ',d.total_hrs_to_date - (floor(d.total_hrs_to_date/60)*60))
       Total_Hrs_To_Date,
-      CONCAT(CASE WHEN floor(d.hours_to_next_check/60) > 9 THEN floor(d.hours_to_next_check/60) WHEN floor(d.hours_to_next_check/60) <= 0 THEN '00' ELSE LPAD(FLOOR(d.hours_to_next_check/60),2,'0') END,':',CASE WHEN d.hours_to_next_check < 0 then '00' else case WHEN floor(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60)) > 9 THEN floor(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60)) ELSE LPAD(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60),2,'0') END END) Hours_To_Next_Check
+      CONCAT(case when hours_to_next_check > 0 then (lpad(floor(Hours_To_Next_Check/60),2,'0')) When CEILING(hours_To_Next_Check/60) <=1 then CONCAT('-',LPAD(-CEILING(hours_To_Next_Check/60),2,'0')) else CEILING(hours_To_Next_Check/60) END,':',
+      case when hours_to_next_check > 0 then LPAD(d.hours_to_next_check-(floor(d.hours_to_next_check/60)*60),2,'0') when -d.hours_to_next_check+(ceiling(d.hours_to_next_check/60)*60)<9 then CONCAT('0',-d.hours_to_next_check+(ceiling(d.hours_to_next_check/60)*60)) ELSE -d.hours_to_next_check+(ceiling(d.hours_to_next_check/60)*60) END)
+      Hours_To_Next_Check, case when Hours_To_Next_Check < 0 then '-' ELSE '+' END Is_Positive
       FROM dlog d WHERE exists (select 1 from dlog_flights where dlog_id = d.id) and  d.callsign = '".CALLSIGN."' AND d.Log_Date BETWEEN '".$from_date_conv."' AND '".$to_date_conv."' ORDER BY d.log_date desc
       ";
       $result = mysqli_query($link, $query);
@@ -47,8 +49,12 @@ require_once "config.php";
                           <td>'.CALLSIGN.'</td>
                           <td>'. $row["Log_Date"] .'</td>
                           <td> '. $row["Total_Hrs_Today"] .'</td>
-                          <td>'. $row["Total_Hrs_To_Date"] .'</td>
-                          <td>'. $row["Hours_To_Next_Check"] .'</td>
+                          <td>'. $row["Total_Hrs_To_Date"] .'</td>';
+
+                          if ($row['Is_Positive'] == '+') {$output .= "<td>". $row['Hours_To_Next_Check'];}
+                            else {$output .= "<td style='background-color: yellow; color: red;'>". $row['Hours_To_Next_Check'];};
+                            $output .= '</td>
+
                      </tr>
                      <tr style="background-color: #aecad6; background-image: linear-gradient(315deg, #aecad6 0%, #b8d3fe 74%);"><td colspan=5><table class="table table-bordered"><tr>
                        <td>Flt No</td>
@@ -126,7 +132,7 @@ require_once "config.php";
                        if ($row_fuel_oil['Departure_Oil_OK'] == '1') {$output .= "<td style='text-align:center; color: white; font-weight: bold; background-color: green;'>Yes";} else {$output .= "<td style='text-align:center; color: white; font-weight: bold; background-color: red;'>No";}; $output .= "</td>";
                        $output .= "<td>". $row_fuel_oil['Arrival_Fuel'] . " L</td>";
                        if ($row_fuel_oil['Arrival_Oil_OK'] == '1') {$output .= "<td style='text-align:center; color: white; font-weight: bold; background-color: green;'>Yes";} else {$output .= "<td style='text-align:center; color: white; font-weight: bold; background-color: red;'>No";}; $output .= "</td>";
-                       if ($row_fuel_oil['Defects'] == 'NIL') {$output .= "<td>". $row_fuel_oil['Defects'];} else {$output .= "<td style='background-color: yellow;'>". $row_fuel_oil['Defects'];}; $output .= "</td>";
+                       if (strtoupper($row_fuel_oil['Defects']) == 'NIL') {$output .= "<td>". $row_fuel_oil['Defects'];} else {$output .= "<td style='background-color: yellow;'>". $row_fuel_oil['Defects'];}; $output .= "</td>";
                        $output .= "</tr>";
                      }
                      $output .= "</table>";
